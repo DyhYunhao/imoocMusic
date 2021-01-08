@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">imoocMusic</string>
+    <string name="d_music">D音乐</string>
+    <string name="user_name">用户名</string>
+    <string name="register">立即注册</string>
+    <string name="login">登 录</string>
+    <string name="register1">注 册</string>
+    <string name="username">用户名：</string>
+    <string name="change_password">修改密码</string>
+    <string name="exit_login">退出登录</string>
+    <string name="sure">确 认</string>
+    <string name="suggest_sing">推荐歌单</string>
+    <string name="play_num">10.00万</string>
+    <string name="music_name">歌单名称</string>
+</resources>
