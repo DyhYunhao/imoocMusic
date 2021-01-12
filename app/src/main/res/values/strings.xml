@@ -12,4 +12,8 @@
     <string name="suggest_sing">推荐歌单</string>
     <string name="play_num">10.00万</string>
     <string name="music_name">歌单名称</string>
+    <string name="hot_music">最热音乐</string>
+    <string name="musicName">音乐名称</string>
+    <string name="author">作者</string>
+    <string name="per_music">专辑音乐</string>
 </resources>
