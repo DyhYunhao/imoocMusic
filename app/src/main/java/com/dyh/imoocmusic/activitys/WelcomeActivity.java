@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.dyh.imoocmusic.R;
+import com.dyh.imoocmusic.utils.UserUtils;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -27,15 +28,20 @@ public class WelcomeActivity extends BaseActivity {
      * 初始化view和data
      */
     private void initView() {
+
+        final boolean isLogin =  UserUtils.isUserLogin(this);
         Timer mTimer = new Timer();
         mTimer.schedule(new TimerTask() {
             @Override
             public void run() {
                 Log.d(TAG, "当前线程为: " + Thread.currentThread());
-                //跳转到主页
-//                toMain();
-                //跳转登录页
-                toLogin();
+                if (isLogin) {
+                    //跳转到主页
+                    toMain();
+                } else {
+                    //跳转登录页
+                    toLogin();
+                }
             }
         }, 3 * 1000);
     }

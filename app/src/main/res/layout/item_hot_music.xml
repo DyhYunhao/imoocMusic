@@ -8,7 +8,7 @@
     android:padding="@dimen/marginSize">
 
     <ImageView
-        android:id="@+id/iv_hot_music_item"
+        android:id="@+id/iv_item_music_img"
         android:layout_width="@dimen/itemIconSize"
         android:layout_height="@dimen/itemIconSize"
         android:src="@mipmap/img1"/>
@@ -22,6 +22,7 @@
         android:layout_marginStart="@dimen/marginSize">
 
         <TextView
+            android:id="@+id/tv_item_music_name"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
@@ -33,6 +34,7 @@
 
 
         <TextView
+            android:id="@+id/tv_item_music_author"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textColor="@color/infoColor"

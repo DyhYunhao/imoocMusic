@@ -2,14 +2,18 @@ package com.dyh.imoocmusic.activitys;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.TextView;
 
 import com.dyh.imoocmusic.R;
+import com.dyh.imoocmusic.utils.LoginUtil;
 import com.dyh.imoocmusic.utils.UserUtils;
 
 public class MeActivity extends BaseActivity {
+    private TextView mTvUserName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -19,8 +23,12 @@ public class MeActivity extends BaseActivity {
         initView();
     }
 
+    @SuppressLint("SetTextI18n")
     private void initView() {
         initNavBar(true, "个人中心", false);
+        mTvUserName = findViewById(R.id.tv_user_name);
+
+        mTvUserName.setText("用户名： " + LoginUtil.getInstance().getPhone());
 
     }
 

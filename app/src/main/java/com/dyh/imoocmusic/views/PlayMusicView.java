@@ -1,7 +1,12 @@
 package com.dyh.imoocmusic.views;
 
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
+import android.media.MediaPlayer;
 import android.os.Build;
+import android.os.IBinder;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,6 +21,9 @@ import androidx.annotation.RequiresApi;
 
 import com.bumptech.glide.Glide;
 import com.dyh.imoocmusic.R;
+import com.dyh.imoocmusic.models.SongModel;
+import com.dyh.imoocmusic.service.MusicService;
+import com.dyh.imoocmusic.utils.MediaPlayerUtil;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -26,12 +34,18 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class PlayMusicView extends FrameLayout {
 
     private Context mContext;
+    //    private MediaPlayerUtil mMediaPlayerUtil;
+    private Intent mServiceIntent;
+    private MusicService.MusicBind mMusicBind;
+    private SongModel mSongModel;
+
     private View mView;
     private CircleImageView mCivMusicImg;
     private Animation mPlayMusicAnim, mPlayNeedleAnim, mStopNeedleAnim;
     private FrameLayout mFlPlayMusic;
     private ImageView mIvPlayNeedle, mIvPlayButton;
-    private boolean isPlaying;
+    private boolean isPlaying, isBindService;
+    private String mPath;
 
     public PlayMusicView(@NonNull Context context) {
         super(context);
@@ -55,6 +69,7 @@ public class PlayMusicView extends FrameLayout {
     }
 
     private void init(Context context) {
+
         mContext = context;
         mView = LayoutInflater.from(mContext).inflate(R.layout.view_play_music, this, false);
         mCivMusicImg = mView.findViewById(R.id.civ_music_img);
@@ -77,6 +92,7 @@ public class PlayMusicView extends FrameLayout {
 
         addView(mView);
 
+//        mMediaPlayerUtil = MediaPlayerUtil.getInstance(mContext);
 
     }
 
@@ -96,9 +112,29 @@ public class PlayMusicView extends FrameLayout {
      */
     public void playMusic() {
         isPlaying = true;
+//        mPath = path;
         mIvPlayButton.setVisibility(View.GONE);
         mFlPlayMusic.startAnimation(mPlayMusicAnim);
         mIvPlayNeedle.startAnimation(mPlayNeedleAnim);
+
+        startMusicService();
+
+//        /**
+//         * 1.判断当前的音乐是否是已经在播放的音乐
+//         * 2.是的话直接执行start方法
+//         * 3.如果不是，就调用setPath方法
+//         */
+//        if (mMediaPlayerUtil.getPath() != null && mMediaPlayerUtil.getPath().equals(path)) {
+//            mMediaPlayerUtil.start();
+//        } else {
+//            mMediaPlayerUtil.setPath(path);
+//            mMediaPlayerUtil.setOnMediaPlayerListener(new MediaPlayerUtil.OnMediaPlayerListener() {
+//                @Override
+//                public void onPrepared(MediaPlayer mp) {
+//                    mMediaPlayerUtil.start();
+//                }
+//            });
+//        }
     }
 
     /**
@@ -109,13 +145,66 @@ public class PlayMusicView extends FrameLayout {
         mIvPlayButton.setVisibility(View.VISIBLE);
         mFlPlayMusic.clearAnimation();
         mIvPlayNeedle.startAnimation(mStopNeedleAnim);
+
+//        mMediaPlayerUtil.pause();
+        if (mMusicBind != null)
+            mMusicBind.stopMusic();
     }
 
     /**
      * 设置光盘中显示的音乐封面图片
      */
-    public void setMusicIcon(String icon) {
+    public void setMusicIcon() {
 //        init(context);
-        Glide.with(mContext).load(icon).into(mCivMusicImg);
+        Glide.with(mContext).load(mSongModel.getPoster()).into(mCivMusicImg);
     }
+
+    public void setMusic(SongModel songModel) {
+        mSongModel = songModel;
+        setMusicIcon();
+    }
+
+    /**
+     * 启动音乐服务
+     */
+    private void startMusicService() {
+        //启动Service
+        if (mServiceIntent == null) {
+            mServiceIntent = new Intent(mContext, MusicService.class);
+            mContext.startService(mServiceIntent);
+        } else {
+            mMusicBind.playMusic();
+        }
+
+        //绑定Service
+        if (!isBindService) {
+            isBindService = true;
+            mContext.bindService(mServiceIntent, conn, Context.BIND_AUTO_CREATE);
+        }
+    }
+
+    /**
+     * 解除绑定
+     */
+    public void destory() {
+        if (isBindService) {
+            isBindService = false;
+            mContext.unbindService(conn);
+        }
+    }
+
+    ServiceConnection conn = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
+            mMusicBind = (MusicService.MusicBind) iBinder;
+            mMusicBind.setMusic(mSongModel);
+            mMusicBind.playMusic();
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName componentName) {
+
+        }
+    };
+
 }

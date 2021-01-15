@@ -53,7 +53,7 @@
     <Button
         style="@style/commitBtn"
         android:text="@string/register1"
-        android:onClick="commitClick"/>
+        android:onClick="registerClick1"/>
 
 
 </LinearLayout>

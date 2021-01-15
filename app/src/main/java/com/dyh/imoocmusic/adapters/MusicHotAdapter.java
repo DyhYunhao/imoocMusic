@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -15,6 +16,11 @@ import com.bumptech.glide.Glide;
 import com.dyh.imoocmusic.R;
 import com.dyh.imoocmusic.activitys.AlbumListActivity;
 import com.dyh.imoocmusic.activitys.PlayMusicActivity;
+import com.dyh.imoocmusic.models.MusicModel;
+import com.dyh.imoocmusic.models.SongModel;
+import com.dyh.imoocmusic.utils.LoginUtil;
+
+import java.util.List;
 
 /**
  * describe: 最热歌单的适配器
@@ -26,10 +32,12 @@ public class MusicHotAdapter extends RecyclerView.Adapter<MusicHotAdapter.HotMus
     private View mItemView;
     private RecyclerView mRcvHotMusic;
     private boolean flag;
+    private List<SongModel> mData;
 
-    public MusicHotAdapter(Context mContext, RecyclerView mRcvHotMusic) {
+    public MusicHotAdapter(Context mContext, RecyclerView mRcvHotMusic, List<SongModel> mData) {
         this.mContext = mContext;
         this.mRcvHotMusic = mRcvHotMusic;
+        this.mData = mData;
     }
 
     @NonNull
@@ -42,14 +50,21 @@ public class MusicHotAdapter extends RecyclerView.Adapter<MusicHotAdapter.HotMus
     @Override
     public void onBindViewHolder(@NonNull HotMusicHolder holder, int position) {
         setHeight();
+
+        SongModel songModel = mData.get(position);
+
         Glide.with(mContext)
-                .load("https://ss0.bdstatic.com/70cFuHSh_Q1YnxGkpoWK1HF6hhy/it/u=167119816,1724333262&fm=26&gp=0.jpg")
+                .load(songModel.getPoster())
                 .into(holder.mIvHotMusic);
+
+        holder.mTvMusicName.setText(songModel.getName());
+        holder.mTvAuthor.setText(songModel.getAuthor());
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(mContext, PlayMusicActivity.class);
+                intent.putExtra(PlayMusicActivity.MUSIC_ID, songModel.getMusicId());
                 mContext.startActivity(intent);
             }
         });
@@ -57,7 +72,7 @@ public class MusicHotAdapter extends RecyclerView.Adapter<MusicHotAdapter.HotMus
 
     @Override
     public int getItemCount() {
-        return 8;
+        return mData.size();
     }
 
     /**
@@ -84,12 +99,15 @@ public class MusicHotAdapter extends RecyclerView.Adapter<MusicHotAdapter.HotMus
     static class HotMusicHolder extends RecyclerView.ViewHolder {
 
         private ImageView mIvHotMusic;
+        private TextView mTvMusicName, mTvAuthor;
         private View itemView;
 
         public HotMusicHolder(@NonNull View itemView) {
             super(itemView);
 
-            mIvHotMusic = itemView.findViewById(R.id.iv_hot_music_item);
+            mIvHotMusic = itemView.findViewById(R.id.iv_item_music_img);
+            mTvMusicName = itemView.findViewById(R.id.tv_item_music_name);
+            mTvAuthor = itemView.findViewById(R.id.tv_item_music_author);
             this.itemView = itemView;
         }
     }

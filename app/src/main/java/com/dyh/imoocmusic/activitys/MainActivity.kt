@@ -12,6 +12,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.dyh.imoocmusic.R
 import com.dyh.imoocmusic.adapters.MusicGridAdapter
 import com.dyh.imoocmusic.adapters.MusicHotAdapter
+import com.dyh.imoocmusic.models.MusicModel
+import com.dyh.imoocmusic.utils.RealmUtil
 import com.dyh.imoocmusic.views.GridItemDecoration
 
 class MainActivity : BaseActivity() {
@@ -20,11 +22,21 @@ class MainActivity : BaseActivity() {
     private lateinit var mRcvHotMusic: RecyclerView
     private lateinit var mMusicGridAdapter: MusicGridAdapter
     private lateinit var mHotMusicAdapter: MusicHotAdapter
+    private lateinit var mRealmUtil: RealmUtil
+    private lateinit var mMusicModel: MusicModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        initData()
         initView()
+    }
+
+    private fun initData() {
+        mRealmUtil = RealmUtil()
+        mMusicModel = mRealmUtil.musicSource
+//        mRealmUtil.close()
     }
 
     private fun initView() {
@@ -34,7 +46,7 @@ class MainActivity : BaseActivity() {
         mRcvSuggestSing.layoutManager = GridLayoutManager(this, 3)
         mRcvSuggestSing.addItemDecoration(GridItemDecoration(resources.getDimensionPixelSize(R.dimen.albumMarginSize), mRcvSuggestSing))
         mRcvSuggestSing.isNestedScrollingEnabled = false
-        mMusicGridAdapter = MusicGridAdapter(this, null)
+        mMusicGridAdapter = MusicGridAdapter(this, mMusicModel.album)
         mRcvSuggestSing.adapter = mMusicGridAdapter
 
         /**
@@ -46,7 +58,12 @@ class MainActivity : BaseActivity() {
         mRcvHotMusic.layoutManager = LinearLayoutManager(this)
         mRcvHotMusic.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
         mRcvHotMusic.isNestedScrollingEnabled = false
-        mHotMusicAdapter = MusicHotAdapter(this, mRcvHotMusic)
+        mHotMusicAdapter = MusicHotAdapter(this, mRcvHotMusic, mMusicModel.hot)
         mRcvHotMusic.adapter = mHotMusicAdapter
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        mRealmUtil.close()
     }
 }
