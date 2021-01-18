@@ -3,6 +3,7 @@
     package="com.dyh.imoocmusic">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
     <application
         android:name=".MyApplication"
@@ -15,7 +16,7 @@
         <service
             android:name=".service.MusicService"
             android:enabled="true"
-            android:exported="true"></service>
+            android:exported="true" />
 
         <activity android:name=".activitys.PlayMusicActivity" />
         <activity android:name=".activitys.AlbumListActivity" />

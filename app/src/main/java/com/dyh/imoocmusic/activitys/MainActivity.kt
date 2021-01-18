@@ -36,7 +36,6 @@ class MainActivity : BaseActivity() {
     private fun initData() {
         mRealmUtil = RealmUtil()
         mMusicModel = mRealmUtil.musicSource
-//        mRealmUtil.close()
     }
 
     private fun initView() {

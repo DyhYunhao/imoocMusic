@@ -1,12 +1,19 @@
 package com.dyh.imoocmusic.service;
 
 import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.os.Binder;
+import android.os.Build;
 import android.os.IBinder;
+
+import androidx.annotation.RequiresApi;
 
 import com.dyh.imoocmusic.R;
 import com.dyh.imoocmusic.activitys.WelcomeActivity;
@@ -96,14 +103,55 @@ public class MusicService extends Service {
                 new Intent(this, WelcomeActivity.class), PendingIntent.FLAG_CANCEL_CURRENT);
 
         //创建Notification
-        Notification notification = new Notification.Builder(this)
-                .setContentTitle(mSongModel.getName())
-                .setContentText(mSongModel.getPoster())
-                .setSmallIcon(R.mipmap.logo)
-                .setContentIntent(pendingIntent)
-                .build();
+//        Notification notification = new Notification.Builder(this)
+//                .setContentTitle(mSongModel.getName())
+//                .setContentText(mSongModel.getPoster())
+//                .setSmallIcon(R.mipmap.logo)
+//                .setContentIntent(pendingIntent)
+//                .build();
+        /**
+         * 创建Notification
+         */
+        Notification notification = null;
+        /**
+         * android API 26 以上 NotificationChannel 特性适配
+         */
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel channel = createNotificationChannel();
+            notification = new Notification.Builder(this, channel.getId())
+                    .setContentTitle(mSongModel.getName())
+                    .setContentText(mSongModel.getAuthor())
+                    .setSmallIcon(R.mipmap.logo)
+                    .setContentIntent(pendingIntent)
+                    .build();
+            NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            notificationManager.createNotificationChannel(channel);
+        } else {
+            notification = new Notification.Builder(this)
+                    .setContentTitle(mSongModel.getName())
+                    .setContentText(mSongModel.getAuthor())
+                    .setSmallIcon(R.mipmap.logo)
+                    .setContentIntent(pendingIntent)
+                    .build();
+        }
 
         //设置notification在前台展示
         startForeground(NOTIFICATION_ID, notification);
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    private NotificationChannel createNotificationChannel () {
+        String channelId = "imooc";
+        String channelName = "ImoocMusicService";
+        String Description = "ImoocMusic";
+        NotificationChannel channel = new NotificationChannel(channelId,
+                channelName, NotificationManager.IMPORTANCE_HIGH);
+        channel.setDescription(Description);
+        channel.enableLights(true);
+        channel.setLightColor(Color.RED);
+        channel.enableVibration(true);
+        channel.setVibrationPattern(new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400});
+        channel.setShowBadge(false);
+        return channel;
     }
 }
